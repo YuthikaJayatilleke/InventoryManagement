@@ -1,0 +1,172 @@
+﻿@model InventoryManagement.App.ViewModels.UserViewModel
+@section Head {
+    <link href="~/Content/sweetalert2.css" rel="stylesheet" />
+    <script src="~/Content/sweetalert2.js"></script>
+}
+<div id="Container">
+    <div id="app">
+
+        <div class="row" style="margin-bottom: 2%">
+            <div class="col-sm-12">
+                <label class="col-sm-4 control-label no-padding-right">First Name</label>
+                <input class="col-sm-8 control-label no-padding-right" type="text" name="Name" v-model="userViewModel.firstName">
+            </div>
+        </div>
+        <div class="row" style="margin-bottom: 2%">
+            <div class="col-sm-12">
+                <label class="col-sm-4 control-label no-padding-right">Last Name</label>
+                <input class="col-sm-8 control-label no-padding-right" type="text" name="Name" v-model="userViewModel.lastName">
+            </div>
+        </div>
+        <div class="row" style="margin-bottom: 2%">
+            <div class="col-sm-12">
+                <label class="col-sm-4 control-label no-padding-right">Username</label>
+                <input class="col-sm-8 control-label no-padding-right" type="text" name="Name" v-model="userViewModel.username">
+            </div>
+        </div>
+        <div class="row" style="margin-bottom: 2%">
+            <label class="col-sm-2" style="margin-top: 5px;">
+                <input name="Show-All" data-val="true" id="i1" type="checkbox" class="ace" v-model="userViewModel.isSetPassword">
+                <span class="lbl">&nbsp;Set Password</span>
+            </label>
+        </div>
+        <div class="row" style="margin-bottom: 2%">
+            <div class="col-sm-12">
+                <label class="col-sm-4 control-label no-padding-right">Password</label>
+                <input class="col-sm-8 control-label no-padding-right" type="password" name="Name" v-model="userViewModel.password">
+            </div>
+        </div>
+        <div class="row" style="margin-bottom: 2%">
+            <div class="col-sm-12">
+                <label class="col-sm-4 control-label no-padding-right">Conform Password</label>
+                <input class="col-sm-8 control-label no-padding-right" type="password" name="Name" v-model="userViewModel.conformPassword">
+            </div>
+        </div>
+        <div class="row" style="margin-bottom: 2%">
+            <label class="col-sm-2" style="margin-top: 5px;">
+                <input name="Show-All" data-val="true" id="i1" type="checkbox" class="ace" v-model="userViewModel.active">
+                <span class="lbl">&nbsp;Active</span>
+            </label>
+        </div>
+
+        <div class="row" style="margin-bottom: 2%">
+            <label class="col-sm-2" style="margin-top: 5px;">
+                <input name="Show-All" data-val="true" id="i1" type="checkbox" class="ace" v-model="userViewModel.isSuperUser">
+                <span class="lbl">&nbsp;Super User</span>
+            </label>
+        </div>
+        <div class="row" style="margin-bottom: 2%">
+            <div class="col-sm-12">
+                <table class="table  table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th style="width: 100%">Cagetory</th>
+                            <th style="width: 100%">Privilege</th>
+                            <th style="width: 100%">Select</th>
+                        <tr>
+                    </thead>
+                    <tbody v-for="(privilege, index) in privileges" :key="privilege.code">
+                        <tr>
+                            <td style="width: 100%;min-width: 100px;">
+                                <input type="text" class="form-control" v-model="privilege.category" style="">
+                            </td>
+                            <td style="width: 100%;min-width: 100px;">
+                                <input type="text" class="form-control" v-model="privilege.name" style="">
+                            </td>
+                            <td style="width: 100%;min-width: 100px;">
+                                <input type="checkbox" class="form-control" v-model="privilege.isSelected" style="">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="form-actions center">
+            <div class="row col-sm-12">
+                <div class="row col-sm-4">
+                </div>
+                <a class=" col-sm-4 btn btn-sm btn-danger btn-round" href="~/User">OK</a>
+                <div class="row col-sm-4">
+                </div>
+            </div>
+
+        </div>
+
+
+
+    </div>
+</div>
+
+@section Scripts{
+    <script type="application/javascript" charset="utf-8">
+
+                var app = new Vue({
+          el: '#app',
+          data: {
+              userViewModel: {},
+              privileges: [],
+          },
+          created() {
+               debugger;
+              this.userViewModel = @Html.Raw(Json.Serialize(Model));
+              this.privileges= @Html.Raw(Json.Serialize(Model.Privileges));
+
+          },
+          mounted() {
+
+
+          },
+          methods: {
+
+
+
+         }
+        });
+
+
+        function save() {
+            var vm = app.userViewModel;
+            vm.privileges = app.privileges;
+            var dataToSend = JSON.stringify(vm);
+
+            var url = "../User/Save";
+            axios({
+                    method: 'post',
+                    dataType: 'json',
+                    url: url,
+                    async: false,
+                    data: "data=" + btoa(unescape(encodeURIComponent(dataToSend))),
+                }).then((response) => {
+         debugger;
+                         if (response.data.success) {
+         debugger;
+                        swal({
+                            title: "Document Success!",
+                            text: "Document is Success",
+                            type: "success",
+                            showCancelButton: false,
+                            cancelButtonText: "No",
+                            confirmButtonClass: 'btn-primary',
+                            confirmButtonText: 'OK',
+                            closeOnConfirm: false,
+                        }).then(function (isConfirm) {
+                            debugger;
+                            if (isConfirm) {
+                                 var url = "../User/Index";
+                                 window.location.replace(url);
+                            } else {
+                                  var url = "../User/Index";
+                                  window.location.replace(url);
+                            }
+                        });
+                    } else {
+                        swal("Document Failed Save!", response.data.msg, "error");
+                    }
+
+
+                  });
+
+        }
+    </script>
+
+}

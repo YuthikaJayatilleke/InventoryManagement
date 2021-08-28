@@ -1,0 +1,114 @@
+﻿@model InventoryManagement.App.ViewModels.MerchantViewModel
+@section Head {
+
+}
+<div id="Container">
+    <div id="app">
+
+        <div class="row" style="margin-bottom: 2%">
+            <div class="col-sm-12">
+                <label class="col-sm-4 control-label no-padding-right">Code</label>
+                <input class="col-sm-8 control-label no-padding-right" type="text" name="Name" v-model="merchantViewModel.code">
+            </div>
+        </div>
+        <div class="row" style="margin-bottom: 2%">
+            <div class="col-sm-12">
+                <label class="col-sm-4 control-label no-padding-right">Name</label>
+                <input class="col-sm-8 control-label no-padding-right" type="text" name="Name" v-model="merchantViewModel.name">
+            </div>
+        </div>
+        <div class="row" style="margin-bottom: 2%">
+            <div class="col-sm-12">
+                <label class="col-sm-4 control-label no-padding-right">E-Mail</label>
+                <input class="col-sm-8 control-label no-padding-right" type="email" name="Name" v-model="merchantViewModel.eMail">
+            </div>
+        </div>
+        <div class="form-actions center">
+            <div class="row col-sm-12">
+                <div class="row col-sm-3">
+                </div>
+                <a class=" col-sm-3 btn btn-sm btn-danger btn-round" href="~/Merchant">Cancel </a>
+                <button type="submit" onclick="save()" class="col-sm-3 btn btn-sm btn-primary btn-round">
+                    Submit
+                </button>
+                <div class="row col-sm-3">
+                </div>
+            </div>
+
+        </div>
+
+
+
+    </div>
+</div>
+
+@section Scripts{
+    <script type="application/javascript" charset="utf-8">
+            const Swal = SweetAlert;
+                var app = new Vue({
+          el: '#app',
+          data: {
+              merchantViewModel: {},
+          },
+          created() {
+               debugger;
+              this.merchantViewModel = @Html.Raw(Json.Serialize(Model));
+
+          },
+          mounted() {
+
+
+          },
+          methods: {
+
+
+
+         }
+        });
+
+
+        function save() {
+            var vm = app.merchantViewModel;
+            var dataToSend = JSON.stringify(vm);
+
+            var url = "../Merchant/Save";
+            axios({
+                    method: 'post',
+                    dataType: 'json',
+                    url: url,
+                    async: false,
+                    data: "data=" + btoa(unescape(encodeURIComponent(dataToSend))),
+                }).then((response) => {
+         debugger;
+                         if (response.data.success) {
+         debugger;
+                        Swal.fire({
+                            title: "Document Success!",
+                            text: "Document is Success",
+                            type: "success",
+                            showCancelButton: false,
+                            cancelButtonText: "No",
+                            confirmButtonClass: 'btn-primary',
+                            confirmButtonText: 'OK',
+                            closeOnConfirm: false,
+                        }).then(function (isConfirm) {
+                            debugger;
+                            if (isConfirm) {
+                                 var url = "../Merchant/Index";
+                                 window.location.replace(url);
+                            } else {
+                                  var url = "../Merchant/Index";
+                                  window.location.replace(url);
+                            }
+                        });
+                    } else {
+                        Swal.fire("Failed to save Document!", response.data.msg, "error");
+                    }
+
+
+                  });
+
+        }
+    </script>
+
+}

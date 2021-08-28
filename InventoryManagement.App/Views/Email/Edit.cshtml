@@ -1,0 +1,179 @@
+﻿@model InventoryManagement.App.ViewModels.EmailViewModel
+@section Head {
+
+}
+<div id="Container">
+    <div id="app">
+
+        <div class="row" style="margin-bottom: 2%">
+            <div class="col-sm-12">
+                <label class="col-sm-4 control-label no-padding-right">Subject</label>
+                <input class="col-sm-8 control-label no-padding-right" type="text" name="Name" v-model="emailViewModel.subject">
+            </div>
+        </div>
+        <div class="row" style="margin-bottom: 2%">
+            <div class="col-sm-12">
+                <label class="col-sm-4 control-label no-padding-right">Body</label>
+                <textarea class="col-sm-8 control-label no-padding-right" type="text" name="Name" v-model="emailViewModel.body"></textarea>
+            </div>
+        </div>
+        <div class="row" style="margin-bottom: 2%">
+            <label class="col-sm-12" style="margin-top: 5px;">
+                <span class="col-sm-8 lbl">&nbsp;Send Inventory Stock for All Merchants</span>
+                <input name="Show-All" data-val="true" id="i1" type="checkbox" class="col-sm-4 ace" v-model="emailViewModel.SendInventoryItemStockAllMerchants">
+
+            </label>
+        </div>
+        <div class="row" style="margin-bottom: 2%">
+            <div class="col-sm-12">
+                <label class="col-sm-4 control-label no-padding-right">Recipient</label>
+                <textarea class="col-sm-8 control-label no-padding-right" type="text" name="Name" v-model="emailViewModel.recipient" :disabled="emailViewModel.SendInventoryItemStockAllMerchants"></textarea>
+            </div>
+        </div>
+        <div class="row" style="margin-bottom: 2%">
+            <div class="col-sm-12">
+                <label class="col-sm-4 control-label no-padding-right">Merchant</label>
+                <v-select :options="merchants" v-model="emailViewModel.merchantViewModel" label="code" @@change="OnMerchantChange($event)" :disabled="emailViewModel.SendInventoryItemStockAllMerchants"></v-select>
+            </div>
+        </div>
+        <div class="form-actions center">
+            <div class="row col-sm-12">
+                <a class=" col-sm-4 btn btn-sm btn-danger btn-round" href="~/Email">Cancel </a>
+                <button type="submit" onclick="save()" class="col-sm-3 btn btn-sm btn-primary btn-round">
+                    Submit
+                </button>
+                <button type="submit" onclick="bulkEmail()" class="col-sm-4 btn btn-sm btn-primary btn-round">
+                    Send Bulk Email (Send Grid)
+                </button>
+            </div>
+
+        </div>
+
+
+
+    </div>
+</div>
+
+@section Scripts{
+    <script type="application/javascript" charset="utf-8">
+           Vue.component('v-select', VueSelect.VueSelect);
+           const Swal = SweetAlert;
+                var app = new Vue({
+          el: '#app',
+          data: {
+              emailViewModel: {},
+              merchants:[],
+          },
+          created() {
+               debugger;
+              this.emailViewModel = @Html.Raw(Json.Serialize(Model));
+
+          },
+          mounted() {
+
+          axios
+                    .get(`/Merchant/GetMerchantList`)
+                    .then(response => {
+         debugger;
+                        this.merchants = response.data;
+                        if(this.merchants.length > 0){
+                           debugger;
+                         this.emailViewModel.merchantViewModel = this.merchants[0] ;
+                         }
+                    });
+          },
+          methods: {
+
+         OnMerchantChange: function ($event) {
+
+                  this.emailViewModel.recipient = this.emailViewModel.merchantViewModel.eMail;
+              },
+
+         }
+        });
+
+
+        function save() {
+            var vm = app.emailViewModel;
+            var dataToSend = JSON.stringify(vm);
+
+            var url = "../Email/Save";
+            axios({
+                    method: 'post',
+                    dataType: 'json',
+                    url: url,
+                    async: false,
+                    data: "data=" + btoa(unescape(encodeURIComponent(dataToSend))),
+                }).then((response) => {
+         debugger;
+                         if (response.data.success) {
+                         Swal.fire({
+                            title: "Document Success!",
+                            text: "Document is Success",
+                            type: "success",
+                            showCancelButton: false,
+                            cancelButtonText: "No",
+                            confirmButtonClass: 'btn-primary',
+                            confirmButtonText: 'OK',
+                            closeOnConfirm: false,
+                        }).then(function (isConfirm) {
+                            debugger;
+                            if (isConfirm) {
+                                 var url = "../Email/Index";
+                                 window.location.replace(url);
+                            } else {
+                                  var url = "../Email/Index";
+                                  window.location.replace(url);
+                            }
+                        });
+                    } else {
+                        Swal.fire("Failed to save Document!", response.data.msg, "error");
+                    }
+
+
+                  });
+        }
+
+          function bulkEmail() {
+            var vm = app.emailViewModel;
+            var dataToSend = JSON.stringify(vm);
+
+            var url = "../Email/BulkEmail";
+            axios({
+                    method: 'post',
+                    dataType: 'json',
+                    url: url,
+                    async: false,
+                    data: "data=" + btoa(unescape(encodeURIComponent(dataToSend))),
+                }).then((response) => {
+         debugger;
+                         if (response.data.success) {
+                         Swal.fire({
+                            title: "Document Success!",
+                            text: "Document is Success",
+                            type: "success",
+                            showCancelButton: false,
+                            cancelButtonText: "No",
+                            confirmButtonClass: 'btn-primary',
+                            confirmButtonText: 'OK',
+                            closeOnConfirm: false,
+                        }).then(function (isConfirm) {
+                            debugger;
+                            if (isConfirm) {
+                                 var url = "../Email/Index";
+                                 window.location.replace(url);
+                            } else {
+                                  var url = "../Email/Index";
+                                  window.location.replace(url);
+                            }
+                        });
+                    } else {
+                        Swal.fire("Failed to save Document!", response.data.msg, "error");
+                    }
+
+
+                  });
+        }
+    </script>
+
+}

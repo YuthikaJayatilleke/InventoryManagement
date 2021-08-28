@@ -1,0 +1,22 @@
+﻿@{
+    ViewBag.Title = "AuthenticatonError";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@if (!string.IsNullOrEmpty(@ViewBag.Error))
+{
+    <div class="row">
+        <div class="col-sm-3">
+        </div>
+         <div class="col-sm-6">
+
+             <div class="alert alert-danger">
+                 @ViewBag.Error
+                 <button class="close" data-dismiss="alert">
+                     <i class="ace-icon fa fa-times"></i>
+                 </button>
+             </div>
+             </div>
+         <div class="col-sm-3">
+        </div>
+    </div>
+}

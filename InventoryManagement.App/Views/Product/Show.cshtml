@@ -1,0 +1,111 @@
+﻿@model InventoryManagement.App.ViewModels.ProductViewModel
+@section Head {
+
+}
+<div id="Container">
+    <div id="app">
+
+        <div class="row" style="margin-bottom: 2%">
+            <div class="col-sm-12">
+                <label class="col-sm-4 control-label no-padding-right">Code</label>
+                <input class="col-sm-8 control-label no-padding-right" type="text" name="Name" v-model="productViewModel.code">
+            </div>
+        </div>
+        <div class="row" style="margin-bottom: 2%">
+            <div class="col-sm-12">
+                <label class="col-sm-4 control-label no-padding-right">Name</label>
+                <input class="col-sm-8 control-label no-padding-right" type="text" name="Name" v-model="productViewModel.name">
+            </div>
+        </div>
+        <div class="row" style="margin-bottom: 2%">
+            <div class="col-sm-12">
+                <label class="col-sm-4 control-label no-padding-right">Current Qty</label>
+                <input class="col-sm-8 control-label no-padding-right" type="number" name="Name" v-model="productViewModel.currentQty">
+            </div>
+        </div>
+        <div class="form-actions center">
+            <div class="row col-sm-12">
+                <div class="row col-sm-4">
+                </div>
+                <a class=" col-sm-4 btn btn-sm btn-danger btn-round" href="~/Product">OK </a>
+                <div class="row col-sm-4">
+                </div>
+            </div>
+
+        </div>
+
+
+
+    </div>
+</div>
+
+@section Scripts{
+    <script type="application/javascript" charset="utf-8">
+
+                var app = new Vue({
+          el: '#app',
+          data: {
+              productViewModel: {},
+          },
+          created() {
+               debugger;
+              this.productViewModel = @Html.Raw(Json.Serialize(Model));
+
+          },
+          mounted() {
+
+
+          },
+          methods: {
+
+
+
+         }
+        });
+
+
+        function save() {
+            var vm = app.productViewModel;
+            var dataToSend = JSON.stringify(vm);
+
+            var url = "../Product/Save";
+            axios({
+                    method: 'post',
+                    dataType: 'json',
+                    url: url,
+                    async: false,
+                    data: "data=" + btoa(unescape(encodeURIComponent(dataToSend))),
+                }).then((response) => {
+         debugger;
+                         if (response.data.success) {
+         debugger;
+                        swal({
+                            title: "Document Success!",
+                            text: "Document is Success",
+                            type: "success",
+                            showCancelButton: false,
+                            cancelButtonText: "No",
+                            confirmButtonClass: 'btn-primary',
+                            confirmButtonText: 'OK',
+                            closeOnConfirm: false,
+                        }).then(function (isConfirm) {
+                            debugger;
+                            if (isConfirm) {
+                                 var url = "../Product/Index";
+                                 window.location.replace(url);
+                            } else {
+                                  var url = "../Product/Index";
+                                  window.location.replace(url);
+                            }
+                        });
+                    } else {
+                        swal("Document Failed Save!", response.data.msg, "error");
+                    }
+
+
+                  });
+
+        }
+    </script>
+
+}
